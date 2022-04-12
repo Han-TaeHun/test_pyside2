@@ -1,29 +1,92 @@
 #coding:utf8
-import nuke
-import nukescripts
+import os
+import sys
+import re
 
+#import csi3
+#import nuke
+#import nukescripts
+
+# UI구성
 class ImportFromTag( nukescripts.PythonPanel ):
+
     def __init__( self ):
+
         nukescripts.PythonPanel.__init__( self, "ImportFromTag" )
         self.projectKnob = nuke.String_Knob("{}".format(""), "Project")
-        self.tagKnob = nuke.String_Knob("{}".format(""), "Tag")
-        self.statusKnob = nuke.Enumeration_Knob("status", "Status", [ "All", "ASSIGN", "WIP", "CONFIRM", "DONE" ])
-        self.plateKnob = nuke.Radio_Knob( "Type", "Type", [ "org", "output"] )
-        for k in ( self.projectKnob, self.tagKnob, self.statusKnob, self.plateKnob ):
+        self.tag_shotKnob = nuke.Enumeration_Knob("Tag&Shot", "", ["Tag", "Shot"])
+        self.inputKnob = nuke.String_Knob("", "")
+        self.inputKnob.clearFlag(nuke.STARTLINE)
+        self.plateKnob = nuke.Bitmask_Knob("Type", "Type", ["org", "output"])
+
+        for k in ( self.projectKnob,  self.tag_shotKnob, self.inputKnob, self.plateKnob ):
             self.addKnob( k )
-        self.aaa()
 
-    def aaa(self):
-        print (self.projectKnob.value())
-        print (self.tagKnob)
+    def call_project(self):
+        # project 찾는 함수
+        pass
+
+# 반복될 코드들 
+class CallDef:
+    def __init__(self, project):
+        self.project = project
         
+    def aaa(self):
+        # org 가져오는 함수
+        pass
 
+    def bbb(self):
+        # output 가져오는 함수
+        pass
+
+    def ccc(self):
+        # path 경로?
+        pass
+
+# UI 불러오기
 p = ImportFromTag()
 p.showModalDialog()
-print  (p.projectKnob.value())
-print  (p.tagKnob.value())
-print  (p.statusKnob.value())
-print  (p.plateKnob.value())
+
+#프로젝트는....생각해보고
+# Tag로 찾을때
+if p.tag_shotKnob.value() == "Tag":
+
+    if not p.inputKnob.value() == "":
+
+        if p.plateKnob.value() == "org":
+            # tag를 통한 org 불러오는 함수
+            pass
+
+        if p.plateKnob.value() == "output":
+            # tag를 통한 output 불러오는 함수
+            pass        
+
+        if p.plateKnob.value() == "all":
+            # tag를 통한 org&output 불러오는 함수
+            pass
+
+    else:
+        nuke.message("Tag를 입력해주세요")
+
+# Shot으로 찾을 때
+if p.tag_shotKnob.value() == "Shot":
+
+    if not p.inputKnob.value() == "":
+
+        if p.plateKnob.value() == "org":
+            # shot를 통한 org 불러오는 함수
+            pass
+
+        if p.plateKnob.value() == "output":
+            # shot를 통한 output 불러오는 함수
+            pass        
+
+        if p.plateKnob.value() == "all":
+            # shot를 통한 org&output 불러오는 함수
+            pass
+
+    else:
+        nuke.message("Shotname을 입력해주세요")
 
 
 
@@ -34,64 +97,6 @@ print  (p.plateKnob.value())
 
 
 
-
-class ShapePanel( nukescripts.PythonPanel ):
-    def __init__( self, node ):
-        '''List all roto paint nodes and the name of their respective shapes and strokes'''
-        nukescripts.PythonPanel.__init__( self, 'RotoPaint Elements' )
-        self.rpNode = node
-        # CREATE KNOBS
-        self.typeKnob = nuke.Enumeration_Knob( 'element', 'element / curve', ['Shapes', 'Strokes'] )
-        self.elementKnob = nuke.Enumeration_Knob( 'curve', '', [] )
-        self.elementKnob.clearFlag( nuke.STARTLINE )
-        # ADD KNOBS
-        for k in ( self.typeKnob, self.elementKnob ):
-            self.addKnob( k )
-
-        # STORE DICTIONARY OF ELEMENTS PER TYPE
-        self.curveDict = {}
-        # FILL DICTIONARY
-        self.getData()
-
-    def getData( self ):
-        '''return a nested dictionary of all shapes and strokes per node'''
-        self.curveDict={ 'Shapes':[], 'Strokes':[] }
-        rootLayer = self.rpNode['curves'].rootLayer
-        for e in rootLayer:
-            if isinstance( e, nuke.rotopaint.Shape ):
-                self.curveDict[ 'Shapes' ].append( e.name )
-            elif isinstance( e, nuke.rotopaint.Stroke ):
-                self.curveDict[ 'Strokes' ].append( e.name )
-
-
-    def knobChanged( self, knob ):
-        if knob is self.typeKnob or knob.name()=='showPanel':
-            self.elementKnob.setValues( self.curveDict[ self.typeKnob.value() ] )
-
-
-
-
-node = nuke.toNode('RotoPaint1')
-p = ShapePanel(node)
-if p.showModalDialog():
-    print p.elementKnob.value()
-
-
-
-
-
-
-
-
-
-
-
-p = nuke.Panel('my custom panel')
-
-p.addButton('push here')
-
-
-p.show()
 
 
 
